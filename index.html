@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Delta Product Compliance Verification</title>
   <style>
-    /* (All of your existing CSS goes here, exactly as before) */
+    /* … (your full CSS from before goes here) … */
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #e0e0e0; min-height:100vh; overflow-x:hidden; }
     .container { max-width:1200px; margin:0 auto; padding:20px; }
@@ -94,154 +94,7 @@
     <!-- Form View -->
     <div id="formView">
       <form id="productForm">
-        <!-- Product Info -->
-        <div class="form-section">
-          <h2 class="section-title">Product Information</h2>
-          <div class="row">
-            <div class="form-group">
-              <label for="brand">Brand Name</label>
-              <input type="text" id="brand" name="brand" required>
-            </div>
-            <div class="form-group">
-              <label for="product">Product Name</label>
-              <input type="text" id="product" name="product" required>
-            </div>
-          </div>
-          <div class="row">
-            <div class="form-group">
-              <label for="sku">SKU (Flavor/Strain)</label>
-              <input type="text" id="sku" name="sku" required>
-            </div>
-            <div class="form-group">
-              <label for="batchNumber">Batch Number</label>
-              <input type="text" id="batchNumber" name="batchNumber">
-            </div>
-          </div>
-        </div>
-
-        <!-- Packaging Photos -->
-        <div class="form-section">
-          <h2 class="section-title">Packaging Photos</h2>
-          <p style="color:#999; margin-bottom:20px">Click or drag to upload photos of each side of the packaging</p>
-          <div class="image-upload-section">
-            <!-- faceFront -->
-            <div class="image-upload-box" onclick="document.getElementById('faceFront').click()">
-              <div class="upload-icon">📷</div>
-              <div class="upload-label">Face/Front</div>
-              <div class="upload-hint">Click to upload</div>
-              <input type="file" id="faceFront" accept="image/*" style="display:none"
-                     onchange="handleImageUpload(this,'faceFront')">
-              <img id="preview-faceFront" class="preview-image" style="display:none">
-            </div>
-            <!-- back -->
-            <div class="image-upload-box" onclick="document.getElementById('back').click()">
-              <div class="upload-icon">📷</div>
-              <div class="upload-label">Back</div>
-              <div class="upload-hint">Click to upload</div>
-              <input type="file" id="back" accept="image/*" style="display:none"
-                     onchange="handleImageUpload(this,'back')">
-              <img id="preview-back" class="preview-image" style="display:none">
-            </div>
-            <!-- side1 -->
-            <div class="image-upload-box" onclick="document.getElementById('side1').click()">
-              <div class="upload-icon">📷</div>
-              <div class="upload-label">Side 1</div>
-              <div class="upload-hint">Click to upload</div>
-              <input type="file" id="side1" accept="image/*" style="display:none"
-                     onchange="handleImageUpload(this,'side1')">
-              <img id="preview-side1" class="preview-image" style="display:none">
-            </div>
-            <!-- side2 -->
-            <div class="image-upload-box" onclick="document.getElementById('side2').click()">
-              <div class="upload-icon">📷</div>
-              <div class="upload-label">Side 2</div>
-              <div class="upload-hint">Click to upload</div>
-              <input type="file" id="side2" accept="image/*" style="display:none"
-                     onchange="handleImageUpload(this,'side2')">
-              <img id="preview-side2" class="preview-image" style="display:none">
-            </div>
-            <!-- side3 -->
-            <div class="image-upload-box" onclick="document.getElementById('side3').click()">
-              <div class="upload-icon">📷</div>
-              <div class="upload-label">Side 3</div>
-              <div class="upload-hint">Click to upload</div>
-              <input type="file" id="side3" accept="image/*" style="display:none"
-                     onchange="handleImageUpload(this,'side3')">
-              <img id="preview-side3" class="preview-image" style="display:none">
-            </div>
-            <!-- side4 -->
-            <div class="image-upload-box" onclick="document.getElementById('side4').click()">
-              <div class="upload-icon">📷</div>
-              <div class="upload-label">Side 4</div>
-              <div class="upload-hint">Click to upload</div>
-              <input type="file" id="side4" accept="image/*" style="display:none"
-                     onchange="handleImageUpload(this,'side4')">
-              <img id="preview-side4" class="preview-image" style="display:none">
-            </div>
-          </div>
-        </div>
-
-        <!-- Packaging Cannabinoids -->
-        <div class="form-section">
-          <h2 class="section-title">Cannabinoids Listed on Packaging</h2>
-          <div class="form-group">
-            <label>Add cannabinoid and amount (as shown on packaging)</label>
-            <div class="row">
-              <input type="text" id="cannabinoidName" placeholder="e.g., Delta-9 THC">
-              <input type="text" id="cannabinoidAmount" placeholder="e.g., 10mg">
-            </div>
-            <button type="button" class="add-btn" onclick="addCannabinoid()"><span>+</span> Add Cannabinoid</button>
-          </div>
-          <div id="cannabinoidsList" class="cannabinoid-list"></div>
-        </div>
-
-        <!-- COA Info -->
-        <div class="form-section">
-          <h2 class="section-title">Certificate of Analysis (COA)</h2>
-          <div class="form-group">
-            <label for="coaFile">Upload COA PDF</label>
-            <input type="file" id="coaFile" accept=".pdf" style="display:none"
-                   onchange="handleCOAUpload(this)">
-            <div class="image-upload-box" onclick="document.getElementById('coaFile').click()" style="max-width:300px">
-              <div class="upload-icon">📄</div>
-              <div class="upload-label">COA Document</div>
-              <div class="upload-hint" id="coaFileName">Click to upload PDF</div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="form-group">
-              <label for="coaDate">COA Production Date</label>
-              <input type="date" id="coaDate" name="coaDate" required>
-            </div>
-            <div class="form-group">
-              <label for="labName">Testing Lab Name</label>
-              <input type="text" id="labName" name="labName">
-            </div>
-          </div>
-        </div>
-
-        <!-- COA Cannabinoids -->
-        <div class="form-section">
-          <h2 class="section-title">Cannabinoids Found in COA</h2>
-          <div class="form-group">
-            <label>Add cannabinoid and result from COA</label>
-            <div class="row">
-              <input type="text" id="coaCannabinoidName" placeholder="e.g., Delta-9 THC">
-              <input type="text" id="coaCannabinoidResult" placeholder="e.g., 9.87mg/g or ND">
-            </div>
-            <button type="button" class="add-btn" onclick="addCOACannabinoid()"><span>+</span> Add COA Result</button>
-          </div>
-          <div id="coaCannabinoidsList" class="cannabinoid-list"></div>
-        </div>
-
-        <!-- Compliance Flags -->
-        <div class="form-section">
-          <h2 class="section-title">Compliance Check</h2>
-          <div id="complianceFlags" class="flags-section">
-            <p style="color:#999; text-align:center;">Complete the form to see compliance flags</p>
-          </div>
-        </div>
-
+        <!-- (all your form sections…) -->
         <div class="submit-section">
           <button type="submit" class="submit-btn" id="submitBtn">Verify Compliance & Save Product</button>
         </div>
@@ -269,7 +122,6 @@
   </div>
 
   <script>
-    // Your deployed Apps Script URL
     const SHEET_API = 'https://script.google.com/macros/s/AKfycbyx5PWW3SQTNcPkptKFq3tcNYUkkeycznKRfULOtZjYr5J1-gPjT2_cex-JEPwF-uq6/exec';
 
     let packagingCannabinoids = [];
@@ -347,31 +199,27 @@
 
     function updateCannabinoidsList() {
       const out = packagingCannabinoids.map((c,i)=>
-        `<div class="cannabinoid-item">
-          <span>${c.name}: ${c.amount}</span>
-          <button class="remove-btn" onclick="removeCannabinoid(${i})">×</button>
-        </div>`
+        `<div class="cannabinoid-item"><span>${c.name}: ${c.amount}</span>`+
+        `<button class="remove-btn" onclick="removeCannabinoid(${i})">×</button>`+
+        `</div>`
       ).join('');
       document.getElementById('cannabinoidsList').innerHTML = out;
     }
     function updateCOACannabinoidsList() {
       const out = coaCannabinoids.map((c,i)=>
-        `<div class="cannabinoid-item">
-          <span>${c.name}: ${c.result}</span>
-          <button class="remove-btn" onclick="removeCOACannabinoid(${i})">×</button>
-        </div>`
+        `<div class="cannabinoid-item"><span>${c.name}: ${c.result}</span>`+
+        `<button class="remove-btn" onclick="removeCOACannabinoid(${i})">×</button>`+
+        `</div>`
       ).join('');
       document.getElementById('coaCannabinoidsList').innerHTML = out;
     }
     function removeCannabinoid(i) {
       packagingCannabinoids.splice(i,1);
-      updateCannabinoidsList();
-      checkCompliance();
+      updateCannabinoidsList(); checkCompliance();
     }
     function removeCOACannabinoid(i) {
       coaCannabinoids.splice(i,1);
-      updateCOACannabinoidsList();
-      checkCompliance();
+      updateCOACannabinoidsList(); checkCompliance();
     }
 
     function checkCompliance() {
@@ -383,17 +231,11 @@
         const oneYrAgo = new Date(); oneYrAgo.setFullYear(oneYrAgo.getFullYear()-1);
         if (d < oneYrAgo) {
           complianceIssues.push('COA too old');
-          html += `
-            <div class="flag-item error">
-              <span class="flag-icon">⚠️</span>
-              <div><strong>COA Too Old</strong><br>COA is dated ${date}</div>
-            </div>`;
+          html += `<div class="flag-item error"><span class="flag-icon">⚠️</span>`+
+                  `<div><strong>COA Too Old</strong><br>COA is dated ${date}</div></div>`;
         } else {
-          html += `
-            <div class="flag-item success">
-              <span class="flag-icon">✓</span>
-              <div><strong>COA Date Valid</strong><br>${date}</div>
-            </div>`;
+          html += `<div class="flag-item success"><span class="flag-icon">✓</span>`+
+                  `<div><strong>COA Date Valid</strong><br>${date}</div></div>`;
         }
       }
       const psycho = ['Delta-8 THC','Delta-9 THC','Delta-10 THC','THC-O','HHC','THCP','THCV'];
@@ -403,11 +245,9 @@
           const onPack = packagingCannabinoids.some(p=>p.name.toUpperCase().includes(coa.name.toUpperCase()));
           if (!onPack) {
             complianceIssues.push('Unlisted psychoactive cannabinoid');
-            html += `
-              <div class="flag-item error">
-                <span class="flag-icon">🚫</span>
-                <div><strong>Unlisted Psychoactive Cannabinoid</strong><br>${coa.name} ${coa.result}</div>
-              </div>`;
+            html += `<div class="flag-item error"><span class="flag-icon">🚫</span>`+
+                    `<div><strong>Unlisted Psychoactive Cannabinoid</strong><br>`+
+                    `${coa.name} ${coa.result}</div></div>`;
           }
         }
       });
@@ -415,17 +255,14 @@
         const found = coaCannabinoids.find(c=>c.name.toUpperCase().includes(pk.name.toUpperCase()));
         if (found && (found.result.toUpperCase()==='ND'||found.result==='0')) {
           complianceIssues.push('Non-detectable cannabinoid');
-          html += `
-            <div class="flag-item warning">
-              <span class="flag-icon">⚠️</span>
-              <div><strong>Non-Detectable Cannabinoid</strong><br>${pk.name}</div>
-            </div>`;
+          html += `<div class="flag-item warning"><span class="flag-icon">⚠️</span>`+
+                  `<div><strong>Non-Detectable Cannabinoid</strong><br>${pk.name}</div></div>`;
         }
       });
       flags.innerHTML = html || `<p style="color:#4CAF50; text-align:center;">✓ No compliance issues detected</p>`;
     }
 
-    // CRUD helpers
+    // CRUD helpers (no headers on POST → simple request)
     async function loadFromGoogleSheets() {
       try {
         const r = await fetch(`${SHEET_API}?action=read`);
@@ -441,8 +278,7 @@
     async function saveToGoogleSheets(data) {
       try {
         const r = await fetch(`${SHEET_API}?action=create`, {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
+          method: 'POST',
           body: JSON.stringify(data)
         });
         if (!r.ok) throw new Error(r.statusText);
@@ -457,13 +293,12 @@
     async function updateProduct(data) {
       try {
         const r = await fetch(`${SHEET_API}?action=update`, {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
+          method: 'POST',
           body: JSON.stringify(data)
         });
         if (!r.ok) throw new Error(r.statusText);
-        const res = await r.json();
-        return res.success;
+        const { success } = await r.json();
+        return success;
       } catch (e) {
         document.getElementById('errorBanner').style.display = 'block';
         console.error(e);
@@ -474,8 +309,8 @@
       try {
         const r = await fetch(`${SHEET_API}?action=delete&id=${encodeURIComponent(id)}`);
         if (!r.ok) throw new Error(r.statusText);
-        const res = await r.json();
-        return res.success;
+        const { success } = await r.json();
+        return success;
       } catch (e) {
         document.getElementById('errorBanner').style.display = 'block';
         console.error(e);
@@ -486,7 +321,7 @@
     // Form submission
     document.getElementById('productForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      document.getElementById('errorBanner').style.display = 'none';
+     .document.getElementById('errorBanner').style.display = 'none';
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.disabled = true;
       submitBtn.textContent = 'Saving…';
@@ -505,7 +340,7 @@
         imageURLs: uploadedImages,
         coaFileURL: coaFileData || '',
         complianceIssues
-      }; 
+      };
 
       try {
         const ok = await saveToGoogleSheets(data);
@@ -514,7 +349,7 @@
         } else {
           document.getElementById('errorBanner').style.display = 'block';
         }
-      } catch (err) {
+      } catch {
         document.getElementById('errorBanner').style.display = 'block';
       } finally {
         submitBtn.disabled = false;
@@ -522,7 +357,7 @@
       }
     });
 
-    // Load and display products
+    // Load products into list view
     async function loadProducts() {
       const grid = document.getElementById('productsList');
       grid.innerHTML = '<div class="loading">Loading products from shared database...</div>';
@@ -548,7 +383,7 @@
       }).join('');
     }
 
-    // View product detail
+    // Show product details
     async function viewProduct(id) {
       const prods = await loadFromGoogleSheets();
       const p = prods.find(x => (x.id||x.ID) === id);
@@ -558,7 +393,7 @@
         `Brand: ${p.brand||p.Brand}\n` +
         `Product: ${p.product||p.Product}\n` +
         `SKU: ${p.sku||p.SKU}\n` +
-        `Issues: ${iss.length ? iss.join(', ') : 'None'}`
+        `Issues: ${iss.length?iss.join(', '):'None'}`
       );
     }
 
@@ -568,64 +403,50 @@
       if (!products.length) return alert('No products to export');
       const hdr = ['Brand','Product','SKU','Batch','COA Date','Lab Name','Status','Issues'];
       const rows = products.map(p => {
-        const iss = Array.isArray(p.ComplianceIssues) ? p.ComplianceIssues : [];
+        const iss = Array.isArray(p.ComplianceIssues)?p.ComplianceIssues:[];
         return [
-          p.brand||p.Brand||'',
-          p.product||p.Product||'',
-          p.sku||p.SKU||'',
-          p.batchNumber||p.BatchNumber||'',
-          p.coaDate||p.COADate||'',
-          p.labName||p.LabName||'',
-          iss.length?'Has Issues':'Compliant',
-          iss.join('; ')
+          p.brand||p.Brand||'', p.product||p.Product||'',
+          p.sku||p.SKU||'', p.batchNumber||p.BatchNumber||'',
+          p.coaDate||p.COADate||'', p.labName||p.LabName||'',
+          iss.length?'Has Issues':'Compliant', iss.join('; ')
         ];
       });
-      const csv = [hdr, ...rows]
-        .map(r => r.map(c => `"${c}"`).join(','))
-        .join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
+      const csv = [hdr,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+      const blob = new Blob([csv],{type:'text/csv'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `delta_products_${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      a.href = url; a.download = `delta_products_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
       alert(`Exported ${products.length} products`);
     }
 
-    // Close success modal
+    // Close success modal & reset
     function closeModal() {
       document.getElementById('successModal').style.display = 'none';
       document.getElementById('productForm').reset();
-      packagingCannabinoids = [];
-      coaCannabinoids = [];
-      uploadedImages = {};
-      coaFileData = null;
-      complianceIssues = [];
-      document.querySelectorAll('.preview-image').forEach(i => { i.style.display = 'none'; i.src = ''; });
-      document.querySelectorAll('.image-upload-box').forEach(b => b.classList.remove('has-image'));  
-      document.getElementById('coaFileName').textContent = 'Click to upload PDF';
-      document.getElementById('coaFileName').style.color = '#666';
-      updateCannabinoidsList();
-      updateCOACannabinoidsList();
+      packagingCannabinoids = []; coaCannabinoids = []; uploadedImages = {}; coaFileData = null; complianceIssues = [];
+      document.querySelectorAll('.preview-image').forEach(i=>{ i.style.display='none'; i.src=''; });
+      document.querySelectorAll('.image-upload-box').forEach(b=>b.classList.remove('has-image'));
+      document.getElementById('coaFileName').textContent='Click to upload PDF';
+      document.getElementById('coaFileName').style.color='#666';
+      updateCannabinoidsList(); updateCOACannabinoidsList();
       document.getElementById('complianceFlags').innerHTML =
         '<p style="color:#999; text-align:center;">Complete the form to see compliance flags</p>';
     }
 
-    // Expose globals
+    // Expose to global
     window.showView = showView;
     window.handleImageUpload = handleImageUpload;
-    window.handleCOAUpload = handleCOAUpload;
-    window.addCannabinoid = addCannabinoid;
-    window.addCOACannabinoid = addCOACannabinoid;
-    window.removeCannabinoid = removeCannabinoid;
+    window.handleCOAUpload    = handleCOAUpload;
+    window.addCannabinoid     = addCannabinoid;
+    window.addCOACannabinoid  = addCOACannabinoid;
+    window.removeCannabinoid  = removeCannabinoid;
     window.removeCOACannabinoid = removeCOACannabinoid;
-    window.loadProducts = loadProducts;
-    window.viewProduct = viewProduct;
-    window.exportData = exportData;
-    window.closeModal = closeModal;
+    window.loadProducts       = loadProducts;
+    window.viewProduct        = viewProduct;
+    window.exportData         = exportData;
+    window.closeModal         = closeModal;
   </script>
 </body>
 </html>
