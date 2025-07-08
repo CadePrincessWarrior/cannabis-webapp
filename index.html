@@ -5,206 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Delta Product Compliance Verification</title>
   <style>
+    /* (All of your existing CSS goes here, exactly as before) */
     * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0a0a; color: #e0e0e0; min-height:100vh; overflow-x:hidden;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #e0e0e0; min-height:100vh; overflow-x:hidden; }
     .container { max-width:1200px; margin:0 auto; padding:20px; }
-    header {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-      padding:30px 0; margin-bottom:40px; position:relative; overflow:hidden;
-    }
-    header::before {
-      content:''; position:absolute; top:-50%; left:-50%;
-      width:200%; height:200%;
-      background: radial-gradient(circle, rgba(76,175,80,0.1) 0%, transparent 70%);
-      animation: pulse 4s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%,100% { transform:scale(1); opacity:0.5; }
-      50% { transform:scale(1.1); opacity:0.8; }
-    }
-    h1 {
-      text-align:center; font-size:2.5em;
-      background: linear-gradient(45deg, #4CAF50, #81C784);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      position:relative; z-index:1;
-    }
-    .subtitle { text-align:center; color:#999; margin-top:10px; z-index:1; position:relative; }
-    .error-banner {
-      display:none; background:#f44336; color:white; padding:15px;
-      text-align:center; margin-bottom:20px; border-radius:8px;
-    }
-    .setup-notice {
-      display:none; background:#ff9800; color:white; padding:15px;
-      border-radius:8px; margin:20px 0; text-align:center;
-    }
+    header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding:30px 0; margin-bottom:40px; position:relative; overflow:hidden; }
+    header::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background: radial-gradient(circle, rgba(76,175,80,0.1) 0%, transparent 70%); animation: pulse 4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform:scale(1); opacity:0.5; } 50% { transform:scale(1.1); opacity:0.8; } }
+    h1 { text-align:center; font-size:2.5em; background: linear-gradient(45deg, #4CAF50, #81C784); -webkit-background-clip:text; -webkit-text-fill-color:transparent; position:relative; z-index:1; }
+    .subtitle { text-align:center; color:#999; margin-top:10px; position:relative; z-index:1; }
+    .error-banner { display:none; background:#f44336; color:white; padding:15px; text-align:center; margin-bottom:20px; border-radius:8px; }
+    .setup-notice { display:none; background:#ff9800; color:white; padding:15px; border-radius:8px; margin:20px 0; text-align:center; }
     .nav-buttons { text-align:center; margin-bottom:30px; }
-    .nav-btn {
-      background:#2a2a2a; color:white; border:1px solid #444;
-      padding:10px 20px; border-radius:8px; cursor:pointer;
-      margin:0 10px; transition:all 0.3s ease;
-    }
+    .nav-btn { background:#2a2a2a; color:white; border:1px solid #444; padding:10px 20px; border-radius:8px; cursor:pointer; margin:0 10px; transition:all 0.3s ease; }
     .nav-btn:hover { background:#333; border-color:#4CAF50; }
     .nav-btn.active { background:#4CAF50; border-color:#4CAF50; }
-    .form-section {
-      background:#1a1a1a; border-radius:16px; padding:30px;
-      margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.5);
-      border:1px solid #333; transition:all 0.3s ease;
-    }
-    .form-section:hover {
-      transform:translateY(-2px);
-      box-shadow:0 15px 40px rgba(0,0,0,0.7);
-      border-color:#4CAF50;
-    }
-    .section-title {
-      font-size:1.5em; margin-bottom:20px; color:#4CAF50;
-      display:flex; align-items:center; gap:10px;
-    }
-    .section-title::before {
-      content:''; display:inline-block; width:4px; height:24px;
-      background:linear-gradient(180deg, #4CAF50, #81C784);
-      border-radius:2px;
-    }
+    .form-section { background:#1a1a1a; border-radius:16px; padding:30px; margin-bottom:30px; box-shadow:0 10px 30px rgba(0,0,0,0.5); border:1px solid #333; transition:all 0.3s ease; }
+    .form-section:hover { transform:translateY(-2px); box-shadow:0 15px 40px rgba(0,0,0,0.7); border-color:#4CAF50; }
+    .section-title { font-size:1.5em; margin-bottom:20px; color:#4CAF50; display:flex; align-items:center; gap:10px; }
+    .section-title::before { content:''; display:inline-block; width:4px; height:24px; background:linear-gradient(180deg, #4CAF50, #81C784); border-radius:2px; }
     .form-group { margin-bottom:20px; }
-    label {
-      display:block; margin-bottom:8px; color:#bbb; font-weight:500;
-    }
-    input[type="text"], input[type="date"], textarea, select {
-      width:100%; padding:12px 16px; background:#0a0a0a;
-      border:1px solid #333; border-radius:8px; color:#e0e0e0;
-      font-size:16px; transition:all 0.3s ease;
-    }
-    input:focus, textarea:focus, select:focus {
-      outline:none; border-color:#4CAF50;
-      box-shadow:0 0 0 3px rgba(76,175,80,0.1);
-    }
-    .image-upload-section {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:20px; margin-top:20px;
-    }
-    .image-upload-box {
-      background:#0a0a0a; border:2px dashed #333; border-radius:12px;
-      padding:40px 20px; text-align:center; cursor:pointer;
-      transition:all 0.3s ease; position:relative; overflow:hidden;
-    }
-    .image-upload-box:hover {
-      border-color:#4CAF50; background:#111; transform:scale(1.02);
-    }
-    .image-upload-box.has-image {
-      border-style:solid; border-color:#4CAF50; background:#0f1f0f;
-    }
+    label { display:block; margin-bottom:8px; color:#bbb; font-weight:500; }
+    input[type="text"], input[type="date"], textarea, select { width:100%; padding:12px 16px; background:#0a0a0a; border:1px solid #333; border-radius:8px; color:#e0e0e0; font-size:16px; transition:all 0.3s ease; }
+    input:focus, textarea:focus, select:focus { outline:none; border-color:#4CAF50; box-shadow:0 0 0 3px rgba(76,175,80,0.1); }
+    .image-upload-section { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; margin-top:20px; }
+    .image-upload-box { background:#0a0a0a; border:2px dashed #333; border-radius:12px; padding:40px 20px; text-align:center; cursor:pointer; transition:all 0.3s ease; position:relative; overflow:hidden; }
+    .image-upload-box:hover { border-color:#4CAF50; background:#111; transform:scale(1.02); }
+    .image-upload-box.has-image { border-style:solid; border-color:#4CAF50; background:#0f1f0f; }
     .upload-icon { font-size:3em; margin-bottom:10px; opacity:0.5; }
     .upload-label { font-size:1.1em; color:#999; margin-bottom:5px; }
     .upload-hint { font-size:0.9em; color:#666; }
-    .preview-image {
-      max-width:100%; max-height:150px; border-radius:8px; margin-top:10px;
-    }
-    .cannabinoid-list {
-      display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;
-    }
-    .cannabinoid-item {
-      background:#2a2a2a; padding:10px 20px; border-radius:8px;
-      border:1px solid #444; display:flex; align-items:center; gap:10px;
-      transition:all 0.3s ease;
-    }
+    .preview-image { max-width:100%; max-height:150px; border-radius:8px; margin-top:10px; }
+    .cannabinoid-list { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+    .cannabinoid-item { background:#2a2a2a; padding:10px 20px; border-radius:8px; border:1px solid #444; display:flex; align-items:center; gap:10px; transition:all 0.3s ease; }
     .cannabinoid-item:hover { background:#333; border-color:#4CAF50; }
-    .remove-btn {
-      background:#f44336; color:white; border:none; border-radius:50%;
-      width:24px; height:24px; cursor:pointer; font-size:18px;
-      display:flex; align-items:center; justify-content:center;
-      transition:all 0.3s ease;
-    }
+    .remove-btn { background:#f44336; color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; transition:all 0.3s ease; }
     .remove-btn:hover { background:#d32f2f; transform:scale(1.1); }
-    .add-btn {
-      background:linear-gradient(45deg,#4CAF50,#81C784); color:white;
-      border:none; padding:10px 20px; border-radius:8px; cursor:pointer;
-      font-size:16px; font-weight:500; transition:all 0.3s ease;
-      display:inline-flex; align-items:center; gap:8px;
-    }
-    .add-btn:hover {
-      transform:translateY(-2px);
-      box-shadow:0 5px 15px rgba(76,175,80,0.3);
-    }
-    .flags-section {
-      background:#1f1a1a; border:1px solid #3a2a2a;
-      border-radius:12px; padding:20px; margin-top:30px;
-    }
-    .flag-item {
-      display:flex; align-items:flex-start; gap:10px;
-      margin-bottom:15px; padding:15px; background:#2a1a1a;
-      border-radius:8px; border-left:4px solid transparent;
-      transition:all 0.3s ease;
-    }
+    .add-btn { background:linear-gradient(45deg,#4CAF50,#81C784); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:16px; font-weight:500; transition:all 0.3s ease; display:inline-flex; align-items:center; gap:8px; }
+    .add-btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(76,175,80,0.3); }
+    .flags-section { background:#1f1a1a; border:1px solid #3a2a2a; border-radius:12px; padding:20px; margin-top:30px; }
+    .flag-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:15px; padding:15px; background:#2a1a1a; border-radius:8px; border-left:4px solid transparent; transition:all 0.3s ease; }
     .flag-item.warning { border-left-color:#ff9800; }
     .flag-item.error   { border-left-color:#f44336; }
     .flag-item.success { border-left-color:#4CAF50; }
     .flag-icon { font-size:1.5em; }
     .submit-section { text-align:center; margin-top:40px; }
-    .submit-btn {
-      background:linear-gradient(45deg,#4CAF50,#81C784); color:white;
-      border:none; padding:16px 48px; border-radius:12px;
-      cursor:pointer; font-size:18px; font-weight:600;
-      transition:all 0.3s ease; position:relative; overflow:hidden;
-    }
-    .submit-btn::before {
-      content:''; position:absolute; top:50%; left:50%;
-      width:0; height:0; border-radius:50%;
-      background:rgba(255,255,255,0.2);
-      transform:translate(-50%,-50%);
-      transition:width 0.6s,height 0.6s;
-    }
-    .submit-btn:hover::before {
-      width:300px; height:300px;
-    }
-    .submit-btn:hover {
-      transform:translateY(-3px);
-      box-shadow:0 10px 30px rgba(76,175,80,0.4);
-    }
+    .submit-btn { background:linear-gradient(45deg,#4CAF50,#81C784); color:white; border:none; padding:16px 48px; border-radius:12px; cursor:pointer; font-size:18px; font-weight:600; transition:all 0.3s ease; position:relative; overflow:hidden; }
+    .submit-btn::before { content:''; position:absolute; top:50%; left:50%; width:0; height:0; border-radius:50%; background:rgba(255,255,255,0.2); transform:translate(-50%,-50%); transition:width 0.6s,height 0.6s; }
+    .submit-btn:hover::before { width:300px; height:300px; }
+    .submit-btn:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(76,175,80,0.4); }
     .submit-btn:disabled { background:#666; cursor:not-allowed; transform:none; }
-    .modal {
-      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.8); z-index:1000; backdrop-filter:blur(5px);
-    }
-    .modal-content {
-      position:absolute; top:50%; left:50%;
-      transform:translate(-50%,-50%);
-      background:#1a1a1a; border-radius:16px; padding:30px;
-      max-width:500px; width:90%;
-      box-shadow:0 20px 60px rgba(0,0,0,0.8);
-      border:1px solid #333;
-    }
-    .row {
-      display:grid; grid-template-columns:1fr 1fr; gap:20px;
-    }
-    .products-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-      gap:20px; margin-top:20px;
-    }
-    .product-card {
-      background:#1a1a1a; border:1px solid #333; border-radius:12px;
-      padding:20px; transition:all 0.3s ease; cursor:pointer;
-    }
-    .product-card:hover {
-      transform:translateY(-2px); border-color:#4CAF50;
-      box-shadow:0 10px 30px rgba(0,0,0,0.5);
-    }
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; backdrop-filter:blur(5px); }
+    .modal-content { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:#1a1a1a; border-radius:16px; padding:30px; max-width:500px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.8); border:1px solid #333; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; margin-top:20px; }
+    .product-card { background:#1a1a1a; border:1px solid #333; border-radius:12px; padding:20px; transition:all 0.3s ease; cursor:pointer; }
+    .product-card:hover { transform:translateY(-2px); border-color:#4CAF50; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
     .product-card h3 { color:#4CAF50; margin-bottom:10px; }
     .product-meta { color:#999; font-size:0.9em; margin-bottom:10px; }
-    .status-badge {
-      display:inline-block; padding:4px 12px; border-radius:20px;
-      font-size:0.85em; font-weight:600; margin-top:10px;
-    }
+    .status-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:0.85em; font-weight:600; margin-top:10px; }
     .status-badge.compliant { background:#4CAF50; color:white; }
     .status-badge.issues    { background:#f44336; color:white; }
     .loading { text-align:center; padding:40px; color:#666; }
-    @media (max-width:768px) {
-      .row { grid-template-columns:1fr; }
-      h1 { font-size:2em; }
-      .image-upload-section { grid-template-columns:1fr; }
-    }
+    @media (max-width:768px) { .row { grid-template-columns:1fr; } h1 { font-size:2em; } .image-upload-section { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -259,9 +122,7 @@
         <!-- Packaging Photos -->
         <div class="form-section">
           <h2 class="section-title">Packaging Photos</h2>
-          <p style="color:#999; margin-bottom:20px">
-            Click or drag to upload photos of each side of the packaging
-          </p>
+          <p style="color:#999; margin-bottom:20px">Click or drag to upload photos of each side of the packaging</p>
           <div class="image-upload-section">
             <!-- faceFront -->
             <div class="image-upload-box" onclick="document.getElementById('faceFront').click()">
@@ -329,9 +190,7 @@
               <input type="text" id="cannabinoidName" placeholder="e.g., Delta-9 THC">
               <input type="text" id="cannabinoidAmount" placeholder="e.g., 10mg">
             </div>
-            <button type="button" class="add-btn" onclick="addCannabinoid()">
-              <span>+</span> Add Cannabinoid
-            </button>
+            <button type="button" class="add-btn" onclick="addCannabinoid()"><span>+</span> Add Cannabinoid</button>
           </div>
           <div id="cannabinoidsList" class="cannabinoid-list"></div>
         </div>
@@ -370,9 +229,7 @@
               <input type="text" id="coaCannabinoidName" placeholder="e.g., Delta-9 THC">
               <input type="text" id="coaCannabinoidResult" placeholder="e.g., 9.87mg/g or ND">
             </div>
-            <button type="button" class="add-btn" onclick="addCOACannabinoid()">
-              <span>+</span> Add COA Result
-            </button>
+            <button type="button" class="add-btn" onclick="addCOACannabinoid()"><span>+</span> Add COA Result</button>
           </div>
           <div id="coaCannabinoidsList" class="cannabinoid-list"></div>
         </div>
@@ -381,16 +238,12 @@
         <div class="form-section">
           <h2 class="section-title">Compliance Check</h2>
           <div id="complianceFlags" class="flags-section">
-            <p style="color:#999; text-align:center;">
-              Complete the form to see compliance flags
-            </p>
+            <p style="color:#999; text-align:center;">Complete the form to see compliance flags</p>
           </div>
         </div>
 
         <div class="submit-section">
-          <button type="submit" class="submit-btn" id="submitBtn">
-            Verify Compliance & Save Product
-          </button>
+          <button type="submit" class="submit-btn" id="submitBtn">Verify Compliance & Save Product</button>
         </div>
       </form>
     </div>
@@ -410,15 +263,13 @@
   <div id="successModal" class="modal">
     <div class="modal-content">
       <h2 style="color:#4CAF50; margin-bottom:20px;">✓ Product Saved Successfully</h2>
-      <p style="margin-bottom:20px;">
-        The product has been verified and saved to the shared database.
-      </p>
+      <p style="margin-bottom:20px;">The product has been verified and saved to the shared database.</p>
       <button class="add-btn" onclick="closeModal()">Add Another Product</button>
     </div>
   </div>
 
   <script>
-    // ← YOUR DEPLOYED WEB-APP URL HERE:
+    // Your deployed Apps Script URL
     const SHEET_API = 'https://script.google.com/macros/s/AKfycbyx5PWW3SQTNcPkptKFq3tcNYUkkeycznKRfULOtZjYr5J1-gPjT2_cex-JEPwF-uq6/exec';
 
     let packagingCannabinoids = [];
@@ -574,8 +425,7 @@
       flags.innerHTML = html || `<p style="color:#4CAF50; text-align:center;">✓ No compliance issues detected</p>`;
     }
 
-    // CRUD
-
+    // CRUD helpers
     async function loadFromGoogleSheets() {
       try {
         const r = await fetch(`${SHEET_API}?action=read`);
@@ -588,7 +438,6 @@
         return [];
       }
     }
-
     async function saveToGoogleSheets(data) {
       try {
         const r = await fetch(`${SHEET_API}?action=create`, {
@@ -605,7 +454,6 @@
         return false;
       }
     }
-
     async function updateProduct(data) {
       try {
         const r = await fetch(`${SHEET_API}?action=update`, {
@@ -622,7 +470,6 @@
         return false;
       }
     }
-
     async function deleteProduct(id) {
       try {
         const r = await fetch(`${SHEET_API}?action=delete&id=${encodeURIComponent(id)}`);
@@ -636,9 +483,14 @@
       }
     }
 
-    document.getElementById('productForm').addEventListener('submit', async e => {
+    // Form submission
+    document.getElementById('productForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       document.getElementById('errorBanner').style.display = 'none';
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving…';
+
       const data = {
         id: Date.now().toString(),
         timestamp: new Date().toISOString(),
@@ -653,17 +505,24 @@
         imageURLs: uploadedImages,
         coaFileURL: coaFileData || '',
         complianceIssues
-      };
-      // local backup
-      const backup = JSON.parse(localStorage.getItem('deltaProducts')||'[]');
-      backup.push(data);
-      localStorage.setItem('deltaProducts', JSON.stringify(backup));
-      // save
-      const ok = await saveToGoogleSheets(data);
-      document.getElementById('submitBtn').disabled = false;
-      if (ok) document.getElementById('successModal').style.display = 'block';
+      }; 
+
+      try {
+        const ok = await saveToGoogleSheets(data);
+        if (ok) {
+          document.getElementById('successModal').style.display = 'block';
+        } else {
+          document.getElementById('errorBanner').style.display = 'block';
+        }
+      } catch (err) {
+        document.getElementById('errorBanner').style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Verify Compliance & Save Product';
+      }
     });
 
+    // Load and display products
     async function loadProducts() {
       const grid = document.getElementById('productsList');
       grid.innerHTML = '<div class="loading">Loading products from shared database...</div>';
@@ -672,8 +531,8 @@
         grid.innerHTML = '<p style="color:#999;text-align:center;">No products saved yet</p>';
         return;
       }
-      grid.innerHTML = products.map(p=>{
-        const issues = Array.isArray(p.ComplianceIssues)?p.ComplianceIssues:[];
+      grid.innerHTML = products.map(p => {
+        const issues = Array.isArray(p.ComplianceIssues) ? p.ComplianceIssues : [];
         return `
           <div class="product-card" onclick="viewProduct('${p.id||p.ID}')">
             <h3>${p.brand||p.Brand} - ${p.product||p.Product}</h3>
@@ -689,59 +548,73 @@
       }).join('');
     }
 
+    // View product detail
     async function viewProduct(id) {
       const prods = await loadFromGoogleSheets();
-      const p = prods.find(x=>(x.id||x.ID)===id);
+      const p = prods.find(x => (x.id||x.ID) === id);
       if (!p) return;
-      const iss = Array.isArray(p.ComplianceIssues)?p.ComplianceIssues:[];
+      const iss = Array.isArray(p.ComplianceIssues) ? p.ComplianceIssues : [];
       alert(
-        `Brand: ${p.brand||p.Brand}\n`+
-        `Product: ${p.product||p.Product}\n`+
-        `SKU: ${p.sku||p.SKU}\n`+
-        `Issues: ${iss.length?iss.join(', '):'None'}`
+        `Brand: ${p.brand||p.Brand}\n` +
+        `Product: ${p.product||p.Product}\n` +
+        `SKU: ${p.sku||p.SKU}\n` +
+        `Issues: ${iss.length ? iss.join(', ') : 'None'}`
       );
     }
 
+    // Export CSV
     async function exportData() {
       const products = await loadFromGoogleSheets();
       if (!products.length) return alert('No products to export');
       const hdr = ['Brand','Product','SKU','Batch','COA Date','Lab Name','Status','Issues'];
-      const rows = products.map(p=>{
-        const iss = Array.isArray(p.ComplianceIssues)?p.ComplianceIssues:[];
+      const rows = products.map(p => {
+        const iss = Array.isArray(p.ComplianceIssues) ? p.ComplianceIssues : [];
         return [
-          p.brand||p.Brand||'', p.product||p.Product||'',
-          p.sku||p.SKU||'', p.batchNumber||p.BatchNumber||'',
-          p.coaDate||p.COADate||'', p.labName||p.LabName||'',
-          iss.length?'Has Issues':'Compliant', iss.join('; ')
+          p.brand||p.Brand||'',
+          p.product||p.Product||'',
+          p.sku||p.SKU||'',
+          p.batchNumber||p.BatchNumber||'',
+          p.coaDate||p.COADate||'',
+          p.labName||p.LabName||'',
+          iss.length?'Has Issues':'Compliant',
+          iss.join('; ')
         ];
       });
-      const csv = [hdr,...rows]
-        .map(r=>r.map(c=>`"${c}"`).join(','))
+      const csv = [hdr, ...rows]
+        .map(r => r.map(c => `"${c}"`).join(','))
         .join('\n');
-      const blob = new Blob([csv],{type:'text/csv'});
+      const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `delta_products_${new Date().toISOString().split('T')[0]}.csv`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      a.href = url;
+      a.download = `delta_products_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
       alert(`Exported ${products.length} products`);
     }
 
+    // Close success modal
     function closeModal() {
       document.getElementById('successModal').style.display = 'none';
       document.getElementById('productForm').reset();
-      packagingCannabinoids = []; coaCannabinoids = [];
-      uploadedImages = {}; coaFileData = null; complianceIssues = [];
-      document.querySelectorAll('.preview-image').forEach(i=>{ i.style.display='none'; i.src=''; });
-      document.querySelectorAll('.image-upload-box').forEach(b=>b.classList.remove('has-image'));
-      document.getElementById('coaFileName').textContent='Click to upload PDF';
-      document.getElementById('coaFileName').style.color='#666';
-      updateCannabinoidsList(); updateCOACannabinoidsList();
+      packagingCannabinoids = [];
+      coaCannabinoids = [];
+      uploadedImages = {};
+      coaFileData = null;
+      complianceIssues = [];
+      document.querySelectorAll('.preview-image').forEach(i => { i.style.display = 'none'; i.src = ''; });
+      document.querySelectorAll('.image-upload-box').forEach(b => b.classList.remove('has-image'));  
+      document.getElementById('coaFileName').textContent = 'Click to upload PDF';
+      document.getElementById('coaFileName').style.color = '#666';
+      updateCannabinoidsList();
+      updateCOACannabinoidsList();
       document.getElementById('complianceFlags').innerHTML =
         '<p style="color:#999; text-align:center;">Complete the form to see compliance flags</p>';
     }
 
-    // expose globals
+    // Expose globals
     window.showView = showView;
     window.handleImageUpload = handleImageUpload;
     window.handleCOAUpload = handleCOAUpload;
