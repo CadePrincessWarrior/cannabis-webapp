@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delta Product Compliance Verification - Firebase Version</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <title>Delta Product Compliance Verification</title>
     
     <style>
         * {
@@ -464,6 +459,16 @@
             padding: 15px;
             border-radius: 8px;
             margin: 20px 0;
+            text-align: center;
+        }
+        
+        .setup-notice {
+            background: #ff9800;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
         }
         
         @media (max-width: 768px) {
@@ -490,6 +495,10 @@
     </header>
     
     <div class="container">
+        <div id="setupNotice" class="setup-notice" style="display: none;">
+            ⚠️ Google Sheets not connected. Please add your Web App URL to the code.
+        </div>
+        
         <div class="nav-buttons">
             <button class="nav-btn active" onclick="showView('form')">Add New Product</button>
             <button class="nav-btn" onclick="showView('list')">View All Products</button>
@@ -645,7 +654,7 @@
                 
                 <!-- Submit -->
                 <div class="submit-section">
-                    <button type="submit" class="submit-btn" id="submitBtn">Verify Compliance & Save to Database</button>
+                    <button type="submit" class="submit-btn" id="submitBtn">Verify Compliance & Save Product</button>
                 </div>
             </form>
         </div>
@@ -665,43 +674,62 @@
     <div id="successModal" class="modal">
         <div class="modal-content">
             <h2 style="color: #4CAF50; margin-bottom: 20px;">✓ Product Saved Successfully</h2>
-            <p style="margin-bottom: 20px;">The product has been verified and saved to the database.</p>
+            <p style="margin-bottom: 20px;">The product has been verified and saved to the shared database.</p>
             <button class="add-btn" onclick="closeModal()">Add Another Product</button>
         </div>
     </div>
     
     <script>
-        // Firebase configuration - REPLACE WITH YOUR CONFIG
-        const firebaseConfig = {
-            apiKey: "YOUR-API-KEY",
-            authDomain: "YOUR-AUTH-DOMAIN",
-            projectId: "YOUR-PROJECT-ID",
-            storageBucket: "YOUR-STORAGE-BUCKET",
-            messagingSenderId: "YOUR-SENDER-ID",
-            appId: "YOUR-APP-ID"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const storage = firebase.storage();
+        // Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx5PWW3SQTNcPkptKFq3tcNYUkkeycznKRfULOtZjYr5J1-gPjT2_cex-JEPwF-uq6/exec';
         
         // Store cannabinoids data
         let packagingCannabinoids = [];
         let coaCannabinoids = [];
-        let uploadedImageFiles = {};
+        let uploadedImages = {};
         let coaFile = null;
+        let coaFileData = null;
+        let complianceIssues = [];
+        
+        // Initialize app
+        window.addEventListener('DOMContentLoaded', function() {
+            if (window.location.hash === '#list') {
+                showView('list');
+            }
+        });
+        
+        // Navigation
+        function showView(view) {
+            const formView = document.getElementById('formView');
+            const listView = document.getElementById('listView');
+            const navBtns = document.querySelectorAll('.nav-btn');
+            
+            navBtns.forEach(btn => btn.classList.remove('active'));
+            
+            if (view === 'form') {
+                formView.style.display = 'block';
+                listView.style.display = 'none';
+                navBtns[0].classList.add('active');
+                window.location.hash = '';
+            } else if (view === 'list') {
+                formView.style.display = 'none';
+                listView.style.display = 'block';
+                navBtns[1].classList.add('active');
+                window.location.hash = 'list';
+                loadProducts();
+            }
+        }
         
         // Handle image uploads
         function handleImageUpload(input, side) {
             if (input.files && input.files[0]) {
-                uploadedImageFiles[side] = input.files[0];
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const preview = document.getElementById(`preview-${side}`);
                     preview.src = e.target.result;
                     preview.style.display = 'block';
                     input.parentElement.classList.add('has-image');
+                    uploadedImages[side] = e.target.result;
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -713,6 +741,13 @@
                 coaFile = input.files[0];
                 document.getElementById('coaFileName').textContent = coaFile.name;
                 document.getElementById('coaFileName').style.color = '#4CAF50';
+                
+                // Convert to base64 for storage
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    coaFileData = e.target.result;
+                };
+                reader.readAsDataURL(coaFile);
             }
         }
         
@@ -782,7 +817,7 @@
             const flags = document.getElementById('complianceFlags');
             const coaDate = document.getElementById('coaDate').value;
             let flagsHTML = '';
-            let hasIssues = false;
+            complianceIssues = [];
             
             // Check COA age
             if (coaDate) {
@@ -791,5 +826,268 @@
                 oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
                 
                 if (coaDateObj < oneYearAgo) {
-                    hasIssues = true;
+                    complianceIssues.push('COA too old');
                     flagsHTML += `
+                        <div class="flag-item error">
+                            <span class="flag-icon">⚠️</span>
+                            <div>
+                                <strong>COA Too Old</strong><br>
+                                COA is dated ${coaDate}, which is over 1 year old
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    flagsHTML += `
+                        <div class="flag-item success">
+                            <span class="flag-icon">✓</span>
+                            <div>
+                                <strong>COA Date Valid</strong><br>
+                                COA is current (${coaDate})
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Check for unlisted psychoactive cannabinoids
+            const psychoactiveCannabinoids = ['Delta-8 THC', 'Delta-9 THC', 'Delta-10 THC', 'THC-O', 'HHC', 'THCP', 'THCV'];
+            coaCannabinoids.forEach(coaItem => {
+                const isND = coaItem.result.toUpperCase() === 'ND' || coaItem.result === '0';
+                if (!isND && psychoactiveCannabinoids.some(p => coaItem.name.toUpperCase().includes(p.toUpperCase()))) {
+                    const isOnPackaging = packagingCannabinoids.some(p => 
+                        p.name.toUpperCase().includes(coaItem.name.toUpperCase())
+                    );
+                    if (!isOnPackaging) {
+                        complianceIssues.push('Unlisted psychoactive cannabinoid');
+                        flagsHTML += `
+                            <div class="flag-item error">
+                                <span class="flag-icon">🚫</span>
+                                <div>
+                                    <strong>Unlisted Psychoactive Cannabinoid</strong><br>
+                                    ${coaItem.name} found in COA (${coaItem.result}) but not listed on packaging
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+            
+            // Check for listed but not detected cannabinoids
+            packagingCannabinoids.forEach(pkgItem => {
+                const coaItem = coaCannabinoids.find(c => 
+                    c.name.toUpperCase().includes(pkgItem.name.toUpperCase()) ||
+                    pkgItem.name.toUpperCase().includes(c.name.toUpperCase())
+                );
+                if (coaItem && (coaItem.result.toUpperCase() === 'ND' || coaItem.result === '0')) {
+                    complianceIssues.push('Non-detectable cannabinoid');
+                    flagsHTML += `
+                        <div class="flag-item warning">
+                            <span class="flag-icon">⚠️</span>
+                            <div>
+                                <strong>Non-Detectable Cannabinoid</strong><br>
+                                ${pkgItem.name} listed on packaging (${pkgItem.amount}) but not detected in COA
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            flags.innerHTML = flagsHTML || '<p style="color: #4CAF50; text-align: center;">✓ No compliance issues detected</p>';
+        }
+        
+        // Function to save product to Google Sheets
+        async function saveToGoogleSheets(productData) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(productData)
+                });
+                
+                console.log('Product saved to Google Sheets');
+                return true;
+            } catch (error) {
+                console.error('Error saving to Google Sheets:', error);
+                return false;
+            }
+        }
+        
+        // Function to load products from Google Sheets
+        async function loadFromGoogleSheets() {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL + '?action=read');
+                const data = await response.json();
+                return data.products || [];
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                return [];
+            }
+        }
+        
+        // Form submission
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            
+            const formData = {
+                id: Date.now().toString(),
+                brand: document.getElementById('brand').value,
+                product: document.getElementById('product').value,
+                sku: document.getElementById('sku').value,
+                batchNumber: document.getElementById('batchNumber').value,
+                coaDate: document.getElementById('coaDate').value,
+                labName: document.getElementById('labName').value,
+                packagingCannabinoids: packagingCannabinoids,
+                coaCannabinoids: coaCannabinoids,
+                imageURLs: uploadedImages,
+                coaFileURL: coaFileData || '',
+                timestamp: new Date().toISOString(),
+                complianceIssues: complianceIssues
+            };
+            
+            // Save to localStorage (for offline/backup)
+            let products = JSON.parse(localStorage.getItem('deltaProducts') || '[]');
+            products.push(formData);
+            localStorage.setItem('deltaProducts', JSON.stringify(products));
+            
+            // Save to Google Sheets (for sharing)
+            const saved = await saveToGoogleSheets(formData);
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Verify Compliance & Save Product';
+            
+            // Show success modal
+            document.getElementById('successModal').style.display = 'block';
+        });
+        
+        // Load products from Google Sheets
+        async function loadProducts() {
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = '<div class="loading">Loading products from shared database...</div>';
+            
+            const products = await loadFromGoogleSheets();
+            
+            if (products.length === 0) {
+                productsList.innerHTML = '<p style="color: #999; text-align: center;">No products saved yet</p>';
+                return;
+            }
+            
+            productsList.innerHTML = products.map(product => {
+                const issues = Array.isArray(product.ComplianceIssues) ? product.ComplianceIssues : [];
+                return `
+                    <div class="product-card" onclick="viewProduct('${product.ID || product.id}')">
+                        <h3>${product.Brand || product.brand} - ${product.Product || product.product}</h3>
+                        <div class="product-meta">
+                            <div>SKU: ${product.SKU || product.sku}</div>
+                            <div>Batch: ${product.BatchNumber || product.batchNumber || 'N/A'}</div>
+                            <div>COA Date: ${product.COADate || product.coaDate}</div>
+                        </div>
+                        <span class="status-badge ${issues.length === 0 ? 'compliant' : 'issues'}">
+                            ${issues.length === 0 ? '✓ Compliant' : '⚠️ Issues Found'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // View product details
+        async function viewProduct(productId) {
+            const products = await loadFromGoogleSheets();
+            const product = products.find(p => (p.ID || p.id) === productId);
+            
+            if (product) {
+                const issues = Array.isArray(product.ComplianceIssues) ? product.ComplianceIssues : [];
+                alert(`Product Details:\n\nBrand: ${product.Brand || product.brand}\nProduct: ${product.Product || product.product}\nSKU: ${product.SKU || product.sku}\nCompliance Issues: ${issues.length === 0 ? 'None' : issues.join(', ')}`);
+            }
+        }
+        
+        // Export data
+        async function exportData() {
+            const products = await loadFromGoogleSheets();
+            
+            if (products.length === 0) {
+                alert('No products to export');
+                return;
+            }
+            
+            // Create CSV
+            const headers = ['Brand', 'Product', 'SKU', 'Batch', 'COA Date', 'Lab Name', 'Compliance Status', 'Issues'];
+            const rows = products.map(p => {
+                const issues = Array.isArray(p.ComplianceIssues) ? p.ComplianceIssues : [];
+                return [
+                    p.Brand || p.brand || '',
+                    p.Product || p.product || '',
+                    p.SKU || p.sku || '',
+                    p.BatchNumber || p.batchNumber || '',
+                    p.COADate || p.coaDate || '',
+                    p.LabName || p.labName || '',
+                    issues.length === 0 ? 'Compliant' : 'Has Issues',
+                    issues.join('; ')
+                ];
+            });
+            
+            const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            
+            // Download CSV
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `delta_products_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`Exported ${products.length} products to CSV`);
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+            
+            // Reset form
+            document.getElementById('productForm').reset();
+            packagingCannabinoids = [];
+            coaCannabinoids = [];
+            uploadedImages = {};
+            coaFile = null;
+            coaFileData = null;
+            complianceIssues = [];
+            
+            // Clear previews
+            document.querySelectorAll('.preview-image').forEach(img => {
+                img.style.display = 'none';
+                img.src = '';
+            });
+            document.querySelectorAll('.image-upload-box').forEach(box => {
+                box.classList.remove('has-image');
+            });
+            document.getElementById('coaFileName').textContent = 'Click to upload PDF';
+            document.getElementById('coaFileName').style.color = '#666';
+            
+            // Clear lists
+            updateCannabinoidsList();
+            updateCOACannabinoidsList();
+            document.getElementById('complianceFlags').innerHTML = '<p style="color: #999; text-align: center;">Complete the form to see compliance flags</p>';
+        }
+        
+        // Make functions global
+        window.showView = showView;
+        window.handleImageUpload = handleImageUpload;
+        window.handleCOAUpload = handleCOAUpload;
+        window.addCannabinoid = addCannabinoid;
+        window.addCOACannabinoid = addCOACannabinoid;
+        window.removeCannabinoid = removeCannabinoid;
+        window.removeCOACannabinoid = removeCOACannabinoid;
+        window.exportData = exportData;
+        window.viewProduct = viewProduct;
+        window.closeModal = closeModal;
+        window.loadProducts = loadProducts;
+    </script>
