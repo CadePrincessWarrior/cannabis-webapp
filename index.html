@@ -281,7 +281,7 @@
 
   <script>
     // Your deployed Apps Script URL
-    const SHEET_API = 'https://script.google.com/macros/s/AKfycbxXNuFTTfmPC0JRx_a83b3Tfq95dvWlugRFJgIlwsY0IFSCklyM47TMDOF6F_KdZo8m/exec';
+    const SHEET_API = 'https://script.google.com/macros/s/AKfycbyvbcuplFL-rNxJklA6t84ZJ0w73SNJVVA_KBTh8UpuWB3H-75gAW55apBIkLrjqM2U/exec';
 
     let packagingCannabinoids = [];
     let coaCannabinoids       = [];
@@ -529,6 +529,21 @@
         const params = new URLSearchParams();
         params.append('action', 'create');
         params.append('data', JSON.stringify(data));
+        
+        const fullUrl = `${SHEET_API}?${params.toString()}`;
+        console.log('URL length:', fullUrl.length);
+        
+        if (fullUrl.length > 2000) {
+          console.warn('URL too long! Length:', fullUrl.length);
+          // Try without images
+          const minimalData = {
+            ...data,
+            imageURLs: {},
+            coaFileURL: ''
+          };
+          params.set('data', JSON.stringify(minimalData));
+          console.log('Reduced URL length:', `${SHEET_API}?${params.toString()}`.length);
+        }
         
         const r = await fetch(`${SHEET_API}?${params.toString()}`, {
           method: 'GET',
