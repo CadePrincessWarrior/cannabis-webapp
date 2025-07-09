@@ -525,29 +525,19 @@
     
     async function saveToGoogleSheets(data) {
       try {
-        // Convert data to URL parameters for GET request (to avoid CORS)
-        const params = new URLSearchParams();
-        params.append('action', 'create');
-        params.append('data', JSON.stringify(data));
+        console.log('Saving to Google Sheets...');
         
-        const fullUrl = `${SHEET_API}?${params.toString()}`;
-        console.log('URL length:', fullUrl.length);
-        
-        if (fullUrl.length > 2000) {
-          console.warn('URL too long! Length:', fullUrl.length);
-          // Try without images
-          const minimalData = {
-            ...data,
-            imageURLs: {},
-            coaFileURL: ''
-          };
-          params.set('data', JSON.stringify(minimalData));
-          console.log('Reduced URL length:', `${SHEET_API}?${params.toString()}`.length);
-        }
-        
-        const r = await fetch(`${SHEET_API}?${params.toString()}`, {
-          method: 'GET',
-          mode: 'no-cors'
+        // Use POST request instead of GET to avoid URL length limits
+        const response = await fetch(SHEET_API, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          body: JSON.stringify({
+            action: 'create',
+            data: data
+          })
         });
         
         // With no-cors, we can't read the response, so assume success
